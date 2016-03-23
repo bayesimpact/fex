@@ -6,7 +6,7 @@ from fex import FeatureExtractorCollection
 log = logging.getLogger('fex')
 
 
-def get_args():
+def get_args(args):
     """Argparse logic lives here.
 
     :returns: parsed arguments.
@@ -17,12 +17,12 @@ def get_args():
     )
     parser.add_argument('--path', type=str, default='features.csv',
                         help='Path to write the dataset to')
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 
-def run(*extractor_list):
+def run(*extractor_list, **kwargs):
     """Parse arguments provided on the commandline and execute extractors."""
-    args = get_args()
+    args = get_args(kwargs.get('args'))
     n_extractors = len(extractor_list)
     log.info('Going to run list of {} FeatureExtractors'.format(n_extractors))
     collection = FeatureExtractorCollection()
