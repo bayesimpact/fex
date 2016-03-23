@@ -62,3 +62,6 @@ target/
 .ipynb_checkpoints
 .DS_Store
 features.csv
+
+# Exclude pickle files that are used for caching.
+*.pckl

@@ -35,3 +35,6 @@ See [examples/simple_example.py](examples/simple_example.py) for a slightly more
 
 * Path to the output CSV file can be specified on the commandline.
 * Run `python examples/simple_example.py --help` to see all commandline parameters.
+* Results from a feature extractor are cached into a pickle, as long as the source code of the feature extractor did not change.
+* The path to the cache file can be specified via commandline arguments of the runner (`--cache-path`).
+* Caching can be deactivated with the `--no-cache` flag of the runner.
