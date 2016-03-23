@@ -1,6 +1,8 @@
 """Feature Extractor base class."""
 
 import collections
+import hashlib
+import inspect
 
 
 class FeatureExtractor(object):
@@ -14,6 +16,8 @@ class FeatureExtractor(object):
         """
         self.prefix = self.name = self.__class__.__name__
         self._data_store = collections.defaultdict(dict)
+        source = inspect.getsource(self.__class__)
+        self.hash = hashlib.md5(source.encode()).hexdigest()
 
     def extract(self):
         """Override this function."""
