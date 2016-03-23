@@ -24,7 +24,7 @@ class FeatureExtractor(object):
 
         :param row_id: string uniquely identifying the row.
         :param feature_id: string uniquely identifying the column.
-        :param value: float
+        :param value: value to be recorded.
         """
         row_id = str(row_id)
         feature_id = self.prefix + '__' + str(feature_id)
