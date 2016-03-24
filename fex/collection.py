@@ -5,7 +5,7 @@ import logging
 import os
 import pickle
 
-from fex import helpers
+from fex import csv
 
 log = logging.getLogger('fex')
 
@@ -29,7 +29,7 @@ class FeatureExtractorCollection(object):
     def run(self, dataset_path):
         """Run all FeatureExtractors and output results to CSV."""
         features = self.generate_features(self._feature_extractors)
-        helpers.write_csv_from_dict(features, dataset_path)
+        csv.dump_dict(features, dataset_path)
 
     def generate_features(self, feature_extractors):
         """Run all FeatureExtractors and record results in a key-value format.
