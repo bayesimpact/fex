@@ -1,12 +1,11 @@
 """A collection to execute a set of feature extractors."""
 
 import collections
+import logging
 import os
 import pickle
 
-# TODO: Get rid of heavy pandas dependency.
-import pandas as pd
-import logging
+from fex import csv
 
 log = logging.getLogger('fex')
 
@@ -30,8 +29,7 @@ class FeatureExtractorCollection(object):
     def run(self, dataset_path):
         """Run all FeatureExtractors and output results to CSV."""
         features = self.generate_features(self._feature_extractors)
-        features.index.name = 'row_id'
-        features.to_csv(dataset_path)
+        csv.dump_dict(features, dataset_path)
 
     def generate_features(self, feature_extractors):
         """Run all FeatureExtractors and record results in a key-value format.
@@ -58,4 +56,4 @@ class FeatureExtractorCollection(object):
             with open(self.cache_path, 'wb') as f:
                 pickle.dump(self._cache, f)
 
-        return pd.DataFrame.from_dict(results, orient='index')
+        return results

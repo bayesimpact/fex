@@ -6,9 +6,6 @@ and export them into an easy to share format.
 
 import setuptools
 
-with open('requirements.txt') as file:
-    requirements = file.readlines()
-
 setuptools.setup(
     name='fex',
     version='0.0.1',
