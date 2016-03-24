@@ -26,10 +26,10 @@ def get_args(args):
 def run(*extractor_list, **kwargs):
     """Parse arguments provided on the commandline and execute extractors."""
     args = get_args(kwargs.get('args'))
-    n_extractors = len(extractor_list)
-    log.info('Going to run list of {} FeatureExtractors'.format(n_extractors))
     if args.no_cache:
         args.cache_path = None
+    n_extractors = len(extractor_list)
+    log.info('Going to run list of {} FeatureExtractors'.format(n_extractors))
     collection = FeatureExtractorCollection(cache_path=args.cache_path)
     for extractor in extractor_list:
         collection.add_feature_extractor(extractor)

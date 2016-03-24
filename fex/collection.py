@@ -42,23 +42,21 @@ class FeatureExtractorCollection(object):
         n_ext = len(feature_extractors)
 
         for i, extractor in enumerate(feature_extractors):
-            info_str = "'{}' ({}/{})".format(extractor.name, i + 1, n_ext)
+            log.info("generating: '%s' (%d/%d)", extractor.name, i + 1, n_ext)
             cached_extractor = self._cache[extractor.name]
-            if cached_extractor and extractor.hash == cached_extractor.hash:
-                log.info('from cache: ' + info_str)
-                # TODO Implement default iterator to do
-                # `for row_id, values in extractor`
-                for row_id, values in cached_extractor._data_store.items():
-                    results[row_id].update(values)
+            if extractor.same(cached_extractor):
+                log.info('pulling from cache')
+                extractor = cached_extractor
             else:
-                log.info('running: ' + info_str)
+                log.info('running...')
                 extractor.extract()
-                # TODO Implement default iterator to do
-                # `for row_id, values in extractor`
-                for row_id, values in extractor._data_store.items():
-                    results[row_id].update(values)
-                if self.cache_path:
-                    self._cache[extractor.name] = extractor
+
+            # TODO Implement default iterator to do
+            # `for row_id, values in extractor`
+            for row_id, values in extractor._data_store.items():
+                results[row_id].update(values)
+            if self.cache_path:
+                self._cache[extractor.name] = extractor
 
         if self.cache_path:
             with open(self.cache_path, 'wb') as f:
