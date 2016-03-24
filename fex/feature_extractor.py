@@ -33,6 +33,14 @@ class FeatureExtractor(object):
         other_hash = hashlib.md5(other_source.encode()).hexdigest()
         return own_hash == other_hash
 
+    def iterrows(self):
+        """Iterate over all rows in the datastore.
+
+        Returns: (row_id, values) tuples.
+        """
+        for row_id, values in self._data_store.items():
+            yield row_id, values
+
     def extract(self):
         """Override this function."""
         raise NotImplementedError

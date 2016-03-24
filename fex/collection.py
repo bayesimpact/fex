@@ -51,9 +51,7 @@ class FeatureExtractorCollection(object):
                 log.info('running...')
                 extractor.extract()
 
-            # TODO Implement default iterator to do
-            # `for row_id, values in extractor`
-            for row_id, values in extractor._data_store.items():
+            for row_id, values in extractor.iterrows():
                 results[row_id].update(values)
             if self.cache_path:
                 self._cache[extractor.name] = extractor
