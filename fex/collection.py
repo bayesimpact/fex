@@ -50,9 +50,7 @@ class FeatureExtractorCollection(object):
             else:
                 log.info('running...')
                 extractor.extract()
-
-            for row_id, values in extractor.iterrows():
-                results[row_id].update(values)
+            extractor.copy_to(results)
             if self.cache_path:
                 self._cache[extractor.name] = extractor
 

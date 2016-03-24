@@ -31,13 +31,10 @@ class FeatureExtractor(object):
             return False
         return self._source_hash == other._source_hash
 
-    def iterrows(self):
-        """Iterate over all rows in the datastore.
-
-        Returns: (row_id, values) tuples.
-        """
+    def copy_to(self, results):
+        """Copy values to results object of a FeatureExtractorCollection."""
         for row_id, values in self._data_store.items():
-            yield row_id, values
+            results[row_id].update(values)
 
     def extract(self):
         """Override this function."""
