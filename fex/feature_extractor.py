@@ -31,6 +31,11 @@ class FeatureExtractor(object):
             return False
         return self._source_hash == other._source_hash
 
+    def copy_to(self, results):
+        """Copy values to results object of a FeatureExtractorCollection."""
+        for row_id, values in self._data_store.items():
+            results[row_id].update(values)
+
     def extract(self):
         """Override this function."""
         raise NotImplementedError
