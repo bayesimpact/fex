@@ -3,12 +3,12 @@
 import csv
 
 
-def write_csv_from_dict(features, dataset_path):
-    """Write the internal fex datastore to disc as CSV.
+def dump_dict(features, dataset_path):
+    """Write a dict of dict to disk as a CSV file.
 
-    Fex records the combined results of all feature extractors in a dictionary
-    with the shape: `{'row_id': {'col_1': value1, 'col_2': value2}, ...}`.
-    This function flattens this nested structure and writes it to disc as CSV.
+    Input is expected in the shape of:
+    `{'row_id': {'col_1': value1, 'col_2': value2}, ...}`.
+    This function flattens this nested structure and writes it to disk as CSV.
     """
     col_names = set()
     for row_id, values in features.items():
