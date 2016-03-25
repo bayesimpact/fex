@@ -14,54 +14,56 @@ log = logging.getLogger('fex')
 
 def _remote_github_url_to_string(remote_url):
     """Parse out the repository identifier from a github URL."""
+    # TODO: make this work with https URLs
     match = re.search('git@github\.com:(.*)\.git', remote_url)
     if not match:
-        log.warn('Remote is not a valid github URL')
-        return ''
+        raise ValueError('Remote is not a valid github URL')
     else:
         identifier = match.group(1)
         return re.sub('\W', ':', identifier)
 
 
-def get_git_remote():
+def _get_git_remote():
     """Get remote branch as a unique identifier of the local git repository.
 
     returns: The URL of the remote branch, witout the username in it.
-    raises: `ValueError` if current directory is not a git repository.
+    raises: `ValueError` if no remote set.
     """
     try:
         remote_url = subprocess.getoutput('git ls-remote --get-url')
-        return _remote_github_url_to_string(remote_url)
     except subprocess.CalledProcessError:
         raise ValueError('No remote configured.')
+    return _remote_github_url_to_string(remote_url)
 
 
-def git_is_pristine():
+def _git_is_pristine():
     """Check whether there are any uncommitted changes in the repository.
 
     returns: True if nothing uncommited in the repo or folder not a repo.
+    raises: `ValueError` if current directory is not a git repository.
     """
-    command = "git diff HEAD --shortstat 2> /dev/null | tail -n1"
+    command = 'git diff HEAD --shortstat'
     diff_str = subprocess.getoutput(command)
+    if "error: Could not access 'HEAD'" in diff_str:
+        raise ValueError('Not a git repository.')
     return diff_str == ''
 
 
-def get_git_hash():
+def _get_git_hash():
     """Fetch the SHA-1 hash of the head commit and return first 12 digits.
 
     returns: The SHA-1 hash of the HEAD commit
     raises: `ValueError` if current directory is not a git repository.
     """
     try:
-        sha1_str = subprocess.getoutput('git rev-parse HEAD')
+        sha1_str = subprocess.getoutput('git rev-parse HEAD --short=12')
     except subprocess.CalledProcessError:
         raise ValueError('Not a git repository.')
 
-    sha1_str = sha1_str.strip().lower()[:12]
-    return sha1_str
+    return sha1_str.strip().lower()
 
 
-def get_args(args):
+def _get_args(args):
     """Argparse logic lives here.
 
     returns: parsed arguments.
@@ -82,9 +84,22 @@ def get_args(args):
     return args
 
 
+def _prefix_git_hash(out_path):
+    try:
+        if not _git_is_pristine():
+            sys.exit('Cannot deploy: Commit all your changes first!')
+        git_hash = _get_git_hash()
+        git_remote = _get_git_remote()
+    except ValueError as e:
+        sys.exit(e)
+    path, filename = os.path.split(out_path)
+    filename = ":".join([git_remote, git_hash, filename])
+    out_path = os.path.join(path, filename)
+
+
 def run(*extractor_list, **kwargs):
     """Parse arguments provided on the commandline and execute extractors."""
-    args = get_args(kwargs.get('args'))
+    args = _get_args(kwargs.get('args'))
     n_extractors = len(extractor_list)
     log.info('Going to run list of {} FeatureExtractors'.format(n_extractors))
     collection = FeatureExtractorCollection(cache_path=args.cache_path)
@@ -93,14 +108,5 @@ def run(*extractor_list, **kwargs):
 
     out_path = args.path
     if args.deploy:
-        if not git_is_pristine():
-            sys.exit('Cannot deploy: Commit all your changes first!')
-        try:
-            git_hash = get_git_hash()
-            git_remote = get_git_remote()
-        except ValueError as e:
-            sys.exit(e.message)
-        path, filename = os.path.split(out_path)
-        filename = ":".join([git_remote, git_hash, filename])
-        out_path = os.path.join(path, filename)
+        out_path = _prefix_git_hash(out_path)
     collection.run(out_path)
