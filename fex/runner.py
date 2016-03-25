@@ -56,7 +56,7 @@ def _get_git_hash():
     raises: `ValueError` if current directory is not a git repository.
     """
     try:
-        sha1_str = subprocess.getoutput('git rev-parse HEAD --short=12')
+        sha1_str = subprocess.getoutput('git rev-parse --short=12 HEAD')
     except subprocess.CalledProcessError:
         raise ValueError('Not a git repository.')
 
