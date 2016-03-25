@@ -12,7 +12,8 @@ from fex import FeatureExtractorCollection
 log = logging.getLogger('fex')
 
 
-def _remote_url_to_string(remote_url):
+def _remote_github_url_to_string(remote_url):
+    """Parse out the repository identifier from a github URL."""
     match = re.search('git@github\.com:(.*)\.git', remote_url)
     if not match:
         log.warn('Remote is not a valid github URL')
@@ -30,7 +31,7 @@ def get_git_remote():
     """
     try:
         remote_url = subprocess.getoutput('git ls-remote --get-url')
-        return _remote_url_to_string(remote_url)
+        return _remote_github_url_to_string(remote_url)
     except subprocess.CalledProcessError:
         raise ValueError('No remote configured.')
 
