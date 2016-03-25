@@ -3,12 +3,23 @@
 import argparse
 import logging
 import os
+import re
 import subprocess
 import sys
 
 from fex import FeatureExtractorCollection
 
 log = logging.getLogger('fex')
+
+
+def _remote_url_to_string(remote_url):
+    match = re.search('git@github\.com:(.*)\.git', remote_url)
+    if not match:
+        log.warn('Remote is not a valid github URL')
+        return ''
+    else:
+        identifier = match.group(1)
+        return re.sub('\W', ':', identifier)
 
 
 def get_git_remote():
@@ -19,10 +30,9 @@ def get_git_remote():
     """
     try:
         remote_url = subprocess.getoutput('git ls-remote --get-url')
-        remote_url = remote_url.split('@')[-1]
+        return _remote_url_to_string(remote_url)
     except subprocess.CalledProcessError:
         raise ValueError('No remote configured.')
-    return remote_url
 
 
 def git_is_pristine():
@@ -36,17 +46,17 @@ def git_is_pristine():
 
 
 def get_git_hash():
-    """Fetch the SHA-1 hash of the head commit.
+    """Fetch the SHA-1 hash of the head commit and return first 12 digits.
 
     returns: The SHA-1 hash of the HEAD commit
     raises: `ValueError` if current directory is not a git repository.
     """
     try:
-        sha1_str = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+        sha1_str = subprocess.getoutput('git rev-parse HEAD')
     except subprocess.CalledProcessError:
         raise ValueError('Not a git repository.')
 
-    sha1_str = sha1_str.strip().lower()
+    sha1_str = sha1_str.strip().lower()[:12]
     return sha1_str
 
 
@@ -90,8 +100,6 @@ def run(*extractor_list, **kwargs):
         except ValueError as e:
             sys.exit(e.message)
         path, filename = os.path.split(out_path)
-        filename = "{}-{}_{}".format(git_remote, git_hash, filename)
-        print(filename)
+        filename = ":".join([git_remote, git_hash, filename])
         out_path = os.path.join(path, filename)
-
     collection.run(out_path)
