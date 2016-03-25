@@ -94,7 +94,7 @@ def _prefix_git_hash(out_path):
         sys.exit(e)
     path, filename = os.path.split(out_path)
     filename = ":".join([git_remote, git_hash, filename])
-    out_path = os.path.join(path, filename)
+    return os.path.join(path, filename)
 
 
 def run(*extractor_list, **kwargs):
