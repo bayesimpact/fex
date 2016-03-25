@@ -1,5 +1,6 @@
 # A Simple Feature Extraction Framework
 
+TODO: describe deployment mode and warn that only the git hash is recorded, no parameters.
 
 ## Motivation
 
