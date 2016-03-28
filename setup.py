@@ -8,6 +8,12 @@ import setuptools
 
 setuptools.setup(
     name='fex',
-    version='0.0.1',
-    packages=setuptools.find_packages()
+    description=__doc__,
+    version='0.1.2',
+    packages=['fex'],
+    author='Stephan Gabler',
+    author_email='stephan@bayesimpact.org',
+    url='https://github.com/bayesimpact/fex',
+    license='The MIT License (MIT)',
+    keywords=['feature extraction', 'framework']
 )
