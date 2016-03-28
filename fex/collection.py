@@ -10,7 +10,7 @@ from fex import csv
 log = logging.getLogger('fex')
 
 
-class FeatureExtractorCollection(object):
+class Collection(object):
     """Framework to run FeatureExtractors."""
 
     def __init__(self, cache_path=None):
