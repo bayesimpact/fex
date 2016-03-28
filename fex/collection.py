@@ -28,10 +28,10 @@ class FeatureExtractorCollection(object):
 
     def run(self, dataset_path):
         """Run all FeatureExtractors and output results to CSV."""
-        features = self.generate_features(self._feature_extractors)
+        features = self._generate_features(self._feature_extractors)
         csv.dump_dict(features, dataset_path)
 
-    def generate_features(self, feature_extractors):
+    def _generate_features(self, feature_extractors):
         """Run all FeatureExtractors and record results in a key-value format.
 
         :param feature_extractors: iterable of `FeatureExtractor` objects.
