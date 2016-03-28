@@ -7,7 +7,7 @@ import re
 import subprocess
 import sys
 
-from fex import FeatureExtractorCollection
+import fex
 
 log = logging.getLogger('fex')
 
@@ -102,7 +102,7 @@ def run(*extractor_list, **kwargs):
     args = _get_args(kwargs.get('args'))
     n_extractors = len(extractor_list)
     log.info('Going to run list of {} FeatureExtractors'.format(n_extractors))
-    collection = FeatureExtractorCollection(cache_path=args.cache_path)
+    collection = fex.Collection(cache_path=args.cache_path)
     for extractor in extractor_list:
         collection.add_feature_extractor(extractor)
 
