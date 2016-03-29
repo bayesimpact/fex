@@ -8,11 +8,9 @@ import fex
 import test_classes as tc
 
 
+# Python mock library cannot be used because cannot be pickled for caching.
 class CallCounterMock(object):
-    """Mocking class to count function calls.
-
-    Python mock library cannot be used because cannot be pickled for caching.
-    """
+    """Mocking class to count function calls."""
 
     def __init__(self):
         """Set counter to zero."""
