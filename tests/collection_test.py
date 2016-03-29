@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 import fex
-import test_classes as tc
+import mock_extractor as me
 
 
 # Python mock library cannot be used because cannot be pickled for caching.
@@ -37,21 +37,20 @@ class CollectionTest(unittest.TestCase):
 
     def test_extract_should_not_be_called_if_hash_unchanged(self):
         """Feature extractor should only be re-computed when source changed."""
-        test_extractor = tc.TestExtractor('1', 'col_1', 42)
+        test_extractor = me.MockExtractor('1', 'col_1', 42)
         test_extractor.extract = CallCounterMock()
+
+        # Create collection, add extractor and run (extract should be called).
         collection = fex.Collection(self.cache_file)
         collection.add_feature_extractor(test_extractor)
         collection.run(self.dataset_file)
-        self.assertEqual(test_extractor.extract.counter, 1)
-        collection = fex.Collection(self.cache_file)
-        collection.add_feature_extractor(test_extractor)
-        collection.run(self.dataset_file)
-        self.assertEqual(test_extractor.extract.counter, 1)
-        collection = fex.Collection(self.cache_file)
-        collection.add_feature_extractor(test_extractor)
-        test_extractor._source_hash = 'new_value'
-        collection.run(self.dataset_file)
-        self.assertEqual(test_extractor.extract.counter, 2)
+        counter_first_run = test_extractor.extract.counter
+
+        # Create a new collection with same extractor and run.
+        collection2 = fex.Collection(self.cache_file)
+        collection2.add_feature_extractor(test_extractor)
+        collection2.run(self.dataset_file)
+        self.assertEqual(test_extractor.extract.counter, counter_first_run)
 
 if __name__ == '__main__':
     unittest.main()  # pragma: no cover
