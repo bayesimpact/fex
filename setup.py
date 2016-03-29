@@ -19,7 +19,7 @@ if 'publish' in sys.argv:
     if '--manual-tests-done' in sys.argv:
         dist_pypi()
     else:
-        sys.exit('Please run manual tests described in manual_tests.md')
+        sys.exit('Please run manual tests described in tests/manual_tests.md')
 
 
 setuptools.setup(
