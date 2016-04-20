@@ -5,8 +5,13 @@ and export them into an easy to share format.
 """
 
 import os
+from pip.req import parse_requirements
 import setuptools
 import sys
+
+
+install_reqs = parse_requirements('requirements.txt', session=False)
+reqs = [str(ir.req) for ir in install_reqs]
 
 
 def dist_pypi():
@@ -25,11 +30,12 @@ if 'publish' in sys.argv:
 setuptools.setup(
     name='fex',
     description=__doc__,
-    version='0.1.2',
+    version='0.2.0',
     packages=['fex'],
     author='Stephan Gabler',
     author_email='stephan@bayesimpact.org',
     url='https://github.com/bayesimpact/fex',
     license='The MIT License (MIT)',
-    keywords=['feature extraction', 'framework']
+    keywords=['feature extraction', 'framework'],
+    install_requires=reqs
 )

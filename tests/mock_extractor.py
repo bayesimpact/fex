@@ -1,5 +1,7 @@
 """Example classes to use in several tests."""
 
+import pandas as pd
+
 import fex
 
 
@@ -15,4 +17,6 @@ class MockExtractor(fex.FeatureExtractor):
 
     def extract(self):
         """Overriden method to emit data."""
-        self.emit(self.row_id, self.col_name, self.value)
+        data = {self.col_name: [self.value]}
+        data_frame = pd.DataFrame(data, index=[self.row_id])
+        self.emit(data_frame)

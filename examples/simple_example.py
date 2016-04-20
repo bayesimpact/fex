@@ -10,9 +10,13 @@ commandline arguments. For details call this file with `-h` or `--help`.
     examples/simple_example.py --help
 """
 
+import logging
+
+import pandas as pd
+
 import fex
 from fex import runner
-import logging
+
 logging.basicConfig(format='%(levelname)s:%(name)s:%(asctime)s=> %(message)s',
                     datefmt='%m/%d %H:%M:%S',
                     level=logging.INFO)
@@ -27,7 +31,8 @@ class ExampleFeature1(fex.FeatureExtractor):
         This is the place where one would do the data extraction and
         transformation.
         """
-        self.emit(1, 'col1', 666)
+        data_frame = pd.DataFrame({'col1': [666]}, index=[1])
+        self.emit(data_frame)
 
 
 class ExampleFeature2(fex.FeatureExtractor):
@@ -35,7 +40,7 @@ class ExampleFeature2(fex.FeatureExtractor):
 
     def extract(self):
         """Overriden method with custom logic."""
-        self.emit(2, 'col1', 42)
-        self.emit(2, 'col2', 314)
+        data_frame = pd.DataFrame({'col1': [42], 'col2': [314]}, index=[2])
+        self.emit(data_frame)
 
 runner.run(ExampleFeature1(), ExampleFeature2())

@@ -3,9 +3,8 @@
 import collections
 import logging
 import os
+import pandas as pd
 import pickle
-
-from fex import csv
 
 log = logging.getLogger('fex')
 
@@ -29,14 +28,14 @@ class Collection(object):
     def run(self, dataset_path):
         """Run all FeatureExtractors and output results to CSV."""
         features = self._generate_features(self._feature_extractors)
-        csv.dump_dict(features, dataset_path)
+        features.to_csv(dataset_path)
 
     def _generate_features(self, feature_extractors):
         """Run all FeatureExtractors and record results in a key-value format.
 
         :param feature_extractors: iterable of `FeatureExtractor` objects.
         """
-        results = collections.defaultdict(dict)
+        results = [pd.DataFrame()]
         n_ext = len(feature_extractors)
 
         for i, extractor in enumerate(feature_extractors):
@@ -48,7 +47,7 @@ class Collection(object):
             else:
                 log.info('running...')
                 extractor.extract()
-            extractor.copy_to(results)
+            results.append(extractor.result)
             if self.cache_path:
                 self._cache[extractor.name] = extractor
 
@@ -56,4 +55,4 @@ class Collection(object):
             with open(self.cache_path, 'wb') as f:
                 pickle.dump(self._cache, f)
 
-        return results
+        return pd.concat(results)

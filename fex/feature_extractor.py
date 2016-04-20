@@ -1,6 +1,5 @@
 """Feature Extractor base class."""
 
-import collections
 import hashlib
 import inspect
 
@@ -16,7 +15,7 @@ class FeatureExtractor(object):
         - prefix: Prefix used for column names. Modify to rename columns.
         """
         self.prefix = self.name = self.__class__.__name__
-        self._data_store = collections.defaultdict(dict)
+        self.result = None
         class_source = inspect.getsource(self.__class__)
         self._source_hash = hashlib.md5(class_source.encode()).hexdigest()
 
@@ -31,22 +30,15 @@ class FeatureExtractor(object):
             return False
         return self._source_hash == other._source_hash
 
-    def copy_to(self, results):
-        """Copy values to results object of a FeatureExtractorCollection."""
-        for row_id, values in self._data_store.items():
-            results[row_id].update(values)
-
     def extract(self):
         """Override this function."""
         raise NotImplementedError
 
-    def emit(self, row_id, feature_id, value):
+    def emit(self, data_frame):
         """Use this function in emit data into the store.
 
-        :param row_id: string uniquely identifying the row.
-        :param feature_id: string uniquely identifying the column.
-        :param value: value to be recorded.
+        :param data_frame: DataFrame to be recorded.
         """
-        row_id = str(row_id)
-        feature_id = self.prefix + '__' + str(feature_id)
-        self._data_store[row_id][feature_id] = value
+        data_frame.columns = [self.prefix + '__' + c
+                              for c in data_frame.columns]
+        self.result = data_frame
