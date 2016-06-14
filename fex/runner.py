@@ -12,6 +12,16 @@ import fex
 log = logging.getLogger('fex')
 
 
+def _run_cmd_get_output(cmd):
+    """Runs a shell command, returns console output.
+
+    Mimics python3's subprocess.getoutput
+    """
+    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+    out, err = process.communicate()
+    return out or err
+
+
 def _remote_github_url_to_string(remote_url):
     """Parse out the repository identifier from a github URL."""
     # TODO: make this work with https URLs
@@ -29,7 +39,7 @@ def _get_git_remote():
     raises: `EnvironmentError` if no remote set.
     """
     try:
-        remote_url = subprocess.getoutput('git ls-remote --get-url')
+        remote_url = _run_cmd_get_output('git ls-remote --get-url')
     except subprocess.CalledProcessError:
         raise EnvironmentError('No remote configured.')
     return _remote_github_url_to_string(remote_url)
@@ -42,7 +52,7 @@ def _git_is_pristine():
     raises: `EnvironmentError` if current directory is not a git repository.
     """
     command = 'git diff HEAD --shortstat'
-    diff_str = subprocess.getoutput(command)
+    diff_str = _run_cmd_get_output(command)
     if "error: Could not access 'HEAD'" in diff_str:
         raise EnvironmentError('Not a git repository.')
     return diff_str == ''
@@ -55,7 +65,7 @@ def _get_git_hash():
     raises: `EnvironmentError` if current directory is not a git repository.
     """
     try:
-        sha1_str = subprocess.getoutput('git rev-parse --short=12 HEAD')
+        sha1_str = _run_cmd_get_output('git rev-parse --short=12 HEAD')
     except subprocess.CalledProcessError:
         raise EnvironmentError('Not a git repository.')
 
