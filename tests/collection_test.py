@@ -55,16 +55,18 @@ class CollectionTest(unittest.TestCase):
 
     def test_collections_correctly_joins_dataframes(self):
         """Ensure the Mock FEX produces the correct DataFrame."""
-        mex1 = me.MockExtractor('1', 'col_1', 100)
-        mex2 = me.MockExtractor('1', 'col_2', 200)
+        mex1 = me.MockExtractor('1', 'col_1', 'foo')
+        mex2 = me.MockExtractor('1', 'col_2', 'bar')
+        mex3 = me.MockExtractor('2', 'col_3', 'baz')
         collection = fex.Collection()
-        collection.add_feature_extractor(mex1)
-        collection.add_feature_extractor(mex2)
+        for ex in [mex1, mex2, mex3]:
+            collection.add_feature_extractor(ex)
         collection.run(self.dataset_file)
         contents = open(self.dataset_file).read().splitlines()
         expected = [
-            ',MockExtractor__col_1,MockExtractor__col_2',
-            '1,100,200'
+            ',MockExtractor__col_1,MockExtractor__col_2,MockExtractor__col_3',
+            '1,foo,bar,',
+            '2,,,baz'
         ]
         self.assertEqual(expected, contents)
 

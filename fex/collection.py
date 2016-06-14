@@ -55,4 +55,4 @@ class Collection(object):
             with open(self.cache_path, 'wb') as f:
                 pickle.dump(self._cache, f)
 
-        return pd.concat(results, axis=1, join='outer')
+        return pd.concat(results, axis=1)
