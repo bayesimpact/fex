@@ -32,8 +32,9 @@ class CollectionTest(unittest.TestCase):
 
     def tearDown(self):
         """Remove the file after the test."""
-        os.remove(self.dataset_file)
-        os.remove(self.cache_file)
+        for f in [self.dataset_file, self.cache_file]:
+            if os.path.exists(f):
+                os.remove(f)
 
     def test_extract_should_not_be_called_if_hash_unchanged(self):
         """Feature extractor should only be re-computed when source changed."""
@@ -51,6 +52,22 @@ class CollectionTest(unittest.TestCase):
         collection2.add_feature_extractor(test_extractor)
         collection2.run(self.dataset_file)
         self.assertEqual(counter_first_run, test_extractor.extract.counter)
+
+    def test_collections_correctly_joins_dataframes(self):
+        """Ensure the Mock FEX produces the correct DataFrame."""
+        mex1 = me.MockExtractor('1', 'col_1', 100)
+        mex2 = me.MockExtractor('1', 'col_2', 200)
+        collection = fex.Collection()
+        collection.add_feature_extractor(mex1)
+        collection.add_feature_extractor(mex2)
+        collection.run(self.dataset_file)
+        contents = open(self.dataset_file).read().splitlines()
+        expected = [
+            ',MockExtractor__col_1,MockExtractor__col_2',
+            '1,100,200'
+        ]
+        self.assertEqual(expected, contents)
+
 
 if __name__ == '__main__':
     unittest.main()  # pragma: no cover

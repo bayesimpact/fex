@@ -17,12 +17,14 @@ Feature extraction is something we are doing over and over at Bayes. This task u
 
 ## Quickstart
 
-Simply write a class that inherits from `FeatureExtractor` and override its `extract` method. Then execute it using the fex runner.
+Simply write a class that inherits from `FeatureExtractor` and override its `extract` method. At one point, it should call `emit` with a pandas DataFrame, which is the result of the extraction. (In the future we may expand this to allow multiple emits, but for now it must emit exactly once.)
+
+Then execute it using the fex runner.
 
 ```
 #!/usr/bin/env python
+import pandas as pd
 import fex
-from fex import runner
 
 class ExampleFeature1(fex.FeatureExtractor):
     """First example feature extractor, super cool."""
@@ -32,9 +34,11 @@ class ExampleFeature1(fex.FeatureExtractor):
 
         This is the place where one would do the data extraction and transformation.
         """
-        self.emit(1, 'col1', 42)
+        data = {'col1': [42]}
+        data_frame = pd.DataFrame(data, index=[1])
+        self.emit(data_frame)
 
-runner.run(ExampleFeature1())
+fex.runner.run(ExampleFeature1())
 ```
 
 See [examples/simple_example.py](examples/simple_example.py) for a slightly more complex example that you can directly run to see the results. Run `examples/simple_example.py --help` to see all commandline parameters.
