@@ -18,10 +18,10 @@ class FeatureExtractor(object):
         self.result = None
         try:
             class_source = inspect.getsource(self.__class__)
-            self._source_hash = hashlib.md5(class_source.encode()).hexdigest()
         except TypeError:
-            # No source code - created in python interpreter
-            self._source_hash = None
+            # Object created in python interpreter -- hard to get its source.
+            class_source = ''
+        self._source_hash = hashlib.md5(class_source.encode()).hexdigest()
 
     def same(self, other):
         """Compare two FeatureExtractor (FE) instances to each other.
