@@ -5,7 +5,7 @@ import inspect
 
 
 class FeatureExtractor(object):
-    """Class defining a feature extractor."""
+    """Base class for all feature extractors."""
 
     def __init__(self):
         """Prepare store which is used to collect the data.
@@ -16,7 +16,11 @@ class FeatureExtractor(object):
         """
         self.prefix = self.name = self.__class__.__name__
         self.result = None
-        class_source = inspect.getsource(self.__class__)
+        try:
+            class_source = inspect.getsource(self.__class__)
+        except TypeError:
+            # Object created in python console -- hard to get its source.
+            class_source = ''
         self._source_hash = hashlib.md5(class_source.encode()).hexdigest()
 
     def same(self, other):
@@ -39,6 +43,22 @@ class FeatureExtractor(object):
 
         :param data_frame: DataFrame to be recorded.
         """
+        if self.result is not None:
+            raise MultipleEmitsError()
         data_frame.columns = [self.prefix + '__' + c
                               for c in data_frame.columns]
         self.result = data_frame
+
+
+class FeatureExtractorBaseException(Exception):
+    """Base class for all fex-specific exceptions."""
+
+    pass
+
+
+class MultipleEmitsError(FeatureExtractorBaseException):
+    """Exception when a Fex tries to emit (set its result) more than once."""
+
+    def __init__(self):
+        """Constructor."""
+        Exception.__init__(self, "Can only emit once per feature extractor.")
