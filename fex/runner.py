@@ -18,9 +18,7 @@ def _run_cmd_get_output(cmd):
 
     Mimics python3's subprocess.getoutput
     """
-    process = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE)
-    out, err = process.communicate()
-    return out or err
+    return subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
 
 
 def _remote_github_url_to_string(remote_url):
