@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import re
+import shlex
 import subprocess
 import sys
 
@@ -17,7 +18,7 @@ def _run_cmd_get_output(cmd):
 
     Mimics python3's subprocess.getoutput
     """
-    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+    process = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE)
     out, err = process.communicate()
     return out or err
 
