@@ -51,9 +51,14 @@ def _git_is_pristine():
     raises: `EnvironmentError` if current directory is not a git repository.
     """
     command = 'git diff HEAD --shortstat'
-    diff_str = _run_cmd_get_output(command)
-    if "error: Could not access 'HEAD'" in diff_str:
-        raise EnvironmentError('Not a git repository.')
+    try:
+        diff_str = _run_cmd_get_output(command)
+    except subprocess.CalledProcessError as e:
+        if "error: Could not access 'HEAD'" in e.output:
+            raise EnvironmentError('Not a git repository.')
+        else:
+            raise
+
     return diff_str == ''
 
 
